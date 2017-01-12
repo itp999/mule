@@ -99,6 +99,7 @@ public class DslElementModelResolverTestCase extends AbstractElementModelTestCas
   public void resolveConnectionWithSubtypes() throws Exception {
     ComponentConfiguration config = getAppElement(applicationModel, HTTP_REQUESTER_CONFIG);
     DslElementModel<ConfigurationModel> configElement = resolve(config);
+
     assertElementName(configElement, "request-config");
 
     ComponentConfiguration connection = config.getNestedComponents().get(0);

@@ -6,14 +6,17 @@
  */
 package org.mule.runtime.module.extension.internal.capability.xml.schema;
 
+import static com.google.common.collect.ImmutableSet.copyOf;
 import static java.util.Collections.emptySet;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toSet;
 import static org.mule.runtime.core.util.annotation.AnnotationUtils.getAnnotation;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.loadExtension;
 import static org.reflections.util.ClasspathHelper.forClassLoader;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.extension.api.annotation.Extension;
-import org.mule.runtime.extension.api.dsl.syntax.resolver.DslResolvingContext;
+import org.mule.runtime.extension.api.dsl.DslResolvingContext;
+import org.mule.runtime.module.extension.internal.util.MuleExtensionUtils;
 
 import java.net.URL;
 import java.util.Collection;
@@ -54,6 +57,13 @@ class ClasspathBasedDslContext implements DslResolvingContext {
     }
 
     return ofNullable(resolvedModels.get(name));
+  }
+
+  @Override
+  public Set<ExtensionModel> getExtensions() {
+    return resolvedModels.size() != extensionsByName.size()
+      ? extensionsByName.values().stream().map(MuleExtensionUtils::loadExtension).collect(toSet())
+      : copyOf(resolvedModels.values());
   }
 
   private void findExtensionsInClasspath() {

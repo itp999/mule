@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:httpn="http://www.mulesoft.org/schema/mule/httpn"
+      xmlns:jmsn="http://www.mulesoft.org/schema/mule/jmsn"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/httpn http://www.mulesoft.org/schema/mule/httpn/current/mule-httpn.xsd
+      http://www.mulesoft.org/schema/mule/jmsn http://www.mulesoft.org/schema/mule/jmsn/current/mule-jmsn.xsd">
+
+    <httpn:listener-config name="listenerConfig">
+        <httpn:listener-connection host="localhost" port="9191" protocol="HTTP"/>
+    </httpn:listener-config>
+
+    <jmsn:config name="config">
+        <jmsn:active-mq-connection/>
+    </jmsn:config>
+
+    <flow name="server">
+        <httpn:listener config-ref="listenerConfig" responseStreamingMode="AUTO" path="init"
+                        allowedMethods="POST" parseRequest="true"/>
+        <logger level="ERROR"/>
+        <jmsn:publish config-ref="config" destination="initialTopic" destinationType="TOPIC">
+            <jmsn:message-builder>
+                <jmsn:body>INITIAL PAYLOAD</jmsn:body>
+            </jmsn:message-builder>
+        </jmsn:publish>
+    </flow>
+
+    <flow name="listenerOne">
+        <jmsn:listener config-ref="config" destination="initialTopic">
+            <jmsn:consumer-type>
+                <jmsn:topic-consumer/>
+            </jmsn:consumer-type>
+        </jmsn:listener>
+        <set-payload value="#[dw:'received_listenerOne' ++ payload]"/>
+        <jmsn:publish config-ref="config" destination="finalDestination"/>
+    </flow>
+
+    <flow name="listenerTwo">
+        <jmsn:listener config-ref="config" destination="initialTopic">
+            <jmsn:consumer-type>
+                <jmsn:topic-consumer/>
+            </jmsn:consumer-type>
+        </jmsn:listener>
+        <set-payload value="#[dw:'received_listenerTwo' ++ payload]"/>
+        <jmsn:publish-consume config-ref="config" destination="middleDestination">
+            <jmsn:message-builder>
+                <jmsn:reply-to destination="#[dw:replyToDestination]" destinationType="QUEUE"/>
+            </jmsn:message-builder>
+        </jmsn:publish-consume>
+        <jmsn:publish config-ref="config" destination="finalDestination"/>
+    </flow>
+
+    <flow name="consumer">
+        <httpn:listener config-ref="listenerConfig" responseStreamingMode="AUTO" path="init"
+                        allowedMethods="GET" parseRequest="true"/>
+        <logger level="ERROR"/>
+        <jmsn:consume config-ref="config" destination="finalDestination"/>
+    </flow>
+
+</mule>

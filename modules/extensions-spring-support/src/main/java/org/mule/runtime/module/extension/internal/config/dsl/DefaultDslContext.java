@@ -6,11 +6,12 @@
  */
 package org.mule.runtime.module.extension.internal.config.dsl;
 
-import org.mule.runtime.extension.api.ExtensionManager;
 import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.extension.api.dsl.syntax.resolver.DslResolvingContext;
+import org.mule.runtime.extension.api.ExtensionManager;
+import org.mule.runtime.extension.api.dsl.DslResolvingContext;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Default implementation of {@link DslResolvingContext} that uses the {@link ExtensionManager} to provide the required
@@ -33,5 +34,10 @@ public class DefaultDslContext implements DslResolvingContext {
   @Override
   public Optional<ExtensionModel> getExtension(String name) {
     return extensionManager.getExtension(name).map(e -> e);
+  }
+
+  @Override
+  public Set<ExtensionModel> getExtensions() {
+    return extensionManager.getExtensions();
   }
 }
