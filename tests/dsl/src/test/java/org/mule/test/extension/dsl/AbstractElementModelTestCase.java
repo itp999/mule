@@ -14,28 +14,28 @@ import static java.util.Optional.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.runtime.api.dsl.config.ArtifactConfiguration;
-import org.mule.runtime.api.dsl.config.ComponentConfiguration;
-import org.mule.runtime.api.dsl.config.ComponentIdentifier;
+import org.mule.runtime.api.app.config.ArtifactConfiguration;
+import org.mule.runtime.api.app.config.ComponentConfiguration;
+import org.mule.runtime.api.app.config.ComponentIdentifier;
 import org.mule.runtime.api.meta.NamedObject;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.XmlDslModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.config.spring.XmlConfigurationDocumentLoader;
 import org.mule.runtime.config.spring.dsl.model.ApplicationModel;
+import org.mule.runtime.config.spring.dsl.model.DslElementModel;
+import org.mule.runtime.config.spring.dsl.model.DslElementModelResolver;
 import org.mule.runtime.config.spring.dsl.processor.ArtifactConfig;
 import org.mule.runtime.config.spring.dsl.processor.ConfigFile;
 import org.mule.runtime.config.spring.dsl.processor.ConfigLine;
 import org.mule.runtime.config.spring.dsl.processor.xml.XmlApplicationParser;
 import org.mule.runtime.core.registry.SpiServiceRegistry;
-import org.mule.runtime.extension.api.dsl.model.DslElementModel;
-import org.mule.runtime.extension.api.dsl.model.DslElementModelResolver;
+import org.mule.runtime.module.extension.internal.config.dsl.DefaultDslContext;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -85,9 +85,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   @Before
   public void setup() throws Exception {
     applicationModel = loadApplicationModel();
-
-    Set<ExtensionModel> extensions = muleContext.getExtensionManager().getExtensions();
-    modelResolver = DslElementModelResolver.getDefault(extensions);
+    modelResolver = DslElementModelResolver.getDefault(new DefaultDslContext(muleContext.getExtensionManager()));
   }
 
   // Scaffolding

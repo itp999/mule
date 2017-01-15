@@ -27,7 +27,7 @@
         </httpn:request-connection>
     </httpn:request-config>
 
-    <flow name="testFlow" initialState="stopped">
+    <flow name="testFlow" initialState="stopped" processingStrategy="" >
 
         <httpn:listener config-ref="httpListener" path="testBuilder">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>

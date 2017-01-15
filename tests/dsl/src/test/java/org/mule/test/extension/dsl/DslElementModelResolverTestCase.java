@@ -10,13 +10,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import org.mule.metadata.api.model.ObjectType;
-import org.mule.runtime.api.dsl.config.ComponentConfiguration;
+import org.mule.runtime.api.app.config.ComponentConfiguration;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.connection.ConnectionProviderModel;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.meta.model.source.SourceModel;
-import org.mule.runtime.extension.api.dsl.model.DslElementModel;
+import org.mule.runtime.config.spring.dsl.model.DslElementModel;
 
 import org.junit.Test;
 

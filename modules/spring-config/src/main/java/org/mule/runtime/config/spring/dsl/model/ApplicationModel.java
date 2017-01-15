@@ -24,9 +24,9 @@ import static org.mule.runtime.config.spring.dsl.spring.BeanDefinitionFactory.SO
 import static org.mule.runtime.core.exception.Errors.Identifiers.ANY_IDENTIFIER;
 import static org.mule.runtime.extension.api.util.NameUtils.hyphenize;
 import static org.mule.runtime.extension.api.util.NameUtils.pluralize;
-import org.mule.runtime.api.dsl.config.ArtifactConfiguration;
-import org.mule.runtime.api.dsl.config.ComponentConfiguration;
-import org.mule.runtime.api.dsl.config.ComponentIdentifier;
+import org.mule.runtime.api.app.config.ArtifactConfiguration;
+import org.mule.runtime.api.app.config.ComponentConfiguration;
+import org.mule.runtime.api.app.config.ComponentIdentifier;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.config.spring.dsl.model.extension.xml.MacroExpansionModuleModel;
 import org.mule.runtime.config.spring.dsl.processor.ArtifactConfig;

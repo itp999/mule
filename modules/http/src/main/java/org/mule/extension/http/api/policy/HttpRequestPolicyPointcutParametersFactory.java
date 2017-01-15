@@ -8,7 +8,7 @@ package org.mule.extension.http.api.policy;
 
 import org.mule.runtime.core.policy.OperationPolicyPointcutParametersFactory;
 import org.mule.runtime.core.policy.PolicyPointcutParameters;
-import org.mule.runtime.api.dsl.config.ComponentIdentifier;
+import org.mule.runtime.api.app.config.ComponentIdentifier;
 
 import java.util.Map;
 
