@@ -6,21 +6,10 @@
  */
 package org.mule.runtime.config.spring.dsl.model;
 
-import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
-import static org.mule.runtime.api.dsl.DslConstants.CONFIG_ATTRIBUTE_NAME;
-import static org.mule.runtime.api.dsl.DslConstants.NAME_ATTRIBUTE_NAME;
-import static org.mule.runtime.api.dsl.DslConstants.POOLING_PROFILE_ELEMENT_IDENTIFIER;
-import static org.mule.runtime.api.dsl.DslConstants.RECONNECT_ELEMENT_IDENTIFIER;
-import static org.mule.runtime.api.dsl.DslConstants.RECONNECT_FOREVER_ELEMENT_IDENTIFIER;
-import static org.mule.runtime.api.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
-import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_PARAMETER_NAME;
-import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
-import static org.mule.runtime.extension.api.ExtensionConstants.REDELIVERY_POLICY_PARAMETER_NAME;
-import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_PARAMETER_NAME;
-import static org.mule.runtime.extension.api.ExtensionConstants.TLS_ATTRIBUTE_NAME;
+import static org.mule.runtime.extension.api.ExtensionConstants.INFRASTRUCTURE_NAMES;
 import static org.mule.runtime.extension.internal.dsl.syntax.DslSyntaxUtils.getIdentifier;
 import org.mule.metadata.api.annotation.DefaultValueAnnotation;
 import org.mule.metadata.api.model.MetadataType;
@@ -37,7 +26,6 @@ import org.mule.runtime.api.util.Reference;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import org.w3c.dom.Document;
@@ -50,17 +38,6 @@ import org.w3c.dom.Element;
  */
 public class DefaultXmlDslElementModelConverter implements XmlDslElementModelConverter {
 
-  private static final List<String> INFRASTRUCTURE_DSL_NAMES = asList(CONFIG_ATTRIBUTE_NAME,
-                                                                      NAME_ATTRIBUTE_NAME,
-                                                                      POOLING_PROFILE_ELEMENT_IDENTIFIER,
-                                                                      RECONNECT_ELEMENT_IDENTIFIER,
-                                                                      RECONNECT_FOREVER_ELEMENT_IDENTIFIER,
-                                                                      REDELIVERY_POLICY_ELEMENT_IDENTIFIER,
-                                                                      TLS_ATTRIBUTE_NAME,
-                                                                      POOLING_PROFILE_PARAMETER_NAME,
-                                                                      RECONNECTION_STRATEGY_PARAMETER_NAME,
-                                                                      REDELIVERY_POLICY_PARAMETER_NAME,
-                                                                      TARGET_PARAMETER_NAME);
   private final Document doc;
 
   public DefaultXmlDslElementModelConverter(Document owner) {
@@ -226,16 +203,16 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
   }
 
   private boolean isInfrastructure(String name) {
-    return INFRASTRUCTURE_DSL_NAMES.contains(name);
+    return INFRASTRUCTURE_NAMES.contains(name);
   }
 
   private void populateInfrastructureConfiguration(Element element, ComponentConfiguration configuration) {
     configuration.getParameters().entrySet().stream()
-        .filter(attribute -> INFRASTRUCTURE_DSL_NAMES.contains(attribute.getKey()))
+        .filter(attribute -> INFRASTRUCTURE_NAMES.contains(attribute.getKey()))
         .forEach(attribute -> element.setAttribute(attribute.getKey(), attribute.getValue()));
 
     configuration.getNestedComponents().stream()
-        .filter(c -> INFRASTRUCTURE_DSL_NAMES.contains(c.getIdentifier().getName()))
+        .filter(c -> INFRASTRUCTURE_NAMES.contains(c.getIdentifier().getName()))
         .forEach(c -> element.appendChild(clone(c)));
   }
 

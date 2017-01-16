@@ -20,7 +20,7 @@ import org.mule.runtime.config.spring.dsl.model.DslElementModel;
 
 import org.junit.Test;
 
-public class DslElementModelResolverTestCase extends AbstractElementModelTestCase {
+public class DslElementModelFactoryTestCase extends AbstractElementModelTestCase {
 
   @Test
   public void resolveSimpleConfigWithFlatConnection() throws Exception {
@@ -63,7 +63,7 @@ public class DslElementModelResolverTestCase extends AbstractElementModelTestCas
     ComponentConfiguration config = getAppElement(applicationModel, DB_CONFIG);
     ComponentConfiguration connection = config.getNestedComponents().get(0);
 
-    assertThat(modelResolver.resolve(connection).isPresent(), is(false));
+    assertThat(modelResolver.create(connection).isPresent(), is(false));
   }
 
   @Test

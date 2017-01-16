@@ -16,6 +16,7 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.api.meta.model.source.SourceModel;
+import org.mule.runtime.config.spring.dsl.model.internal.DefaultDslElementModelFactory;
 import org.mule.runtime.extension.api.dsl.DslResolvingContext;
 
 import java.util.Optional;
@@ -24,14 +25,14 @@ import java.util.Set;
 /**
  * Provides the {@link DslElementModel} of any {@link ComponentConfiguration} within
  * the context of the available application plugins, provided for each instance
- * of this {@link DslElementModelResolver}
+ * of this {@link DslElementModelFactory}
  *
  * @since 1.0
  */
-public interface DslElementModelResolver {
+public interface DslElementModelFactory {
 
   /**
-   * Provides a default implementation of the {@link DslElementModelResolver}
+   * Provides a default implementation of the {@link DslElementModelFactory}
    * <p>
    * <p>
    * //TODO
@@ -39,10 +40,10 @@ public interface DslElementModelResolver {
    * @param extensions the {@link Set} of {@link ExtensionModel} to be used as context when
    *                   performing a {@link ComponentIdentifier#getNamespace namespace}
    *                   based lookup for a given {@link ExtensionModel}.
-   * @return a default implementation of the {@link DslElementModelResolver}
+   * @return a default implementation of the {@link DslElementModelFactory}
    */
-  static DslElementModelResolver getDefault(DslResolvingContext context) {
-    return new DefaultDslElementModelResolver(context);
+  static DslElementModelFactory getDefault(DslResolvingContext context) {
+    return new DefaultDslElementModelFactory(context);
   }
 
   /**
@@ -68,10 +69,9 @@ public interface DslElementModelResolver {
    * resolution context, or {@link Optional#empty} if no {@link DslElementModel} could be created
    * for the given {@code applicationElement} with the current extensions context.
    */
-  DslElementModel<ConfigurationModel> resolve(ConfigurationElementDeclaration configurationDeclaration);
+  DslElementModel<ConfigurationModel> create(ConfigurationElementDeclaration configurationDeclaration);
 
-  <T extends org.mule.runtime.api.meta.model.ComponentModel> DslElementModel<T> resolve(
-    ComponentElementDeclaration declaration);
+  <T extends org.mule.runtime.api.meta.model.ComponentModel> DslElementModel<T> create(ComponentElementDeclaration declaration);
 
   /**
    * Resolves the {@link DslElementModel} for the given {@link ComponentConfiguration applicationElement},
@@ -92,6 +92,6 @@ public interface DslElementModelResolver {
    * resolution context, or {@link Optional#empty} if no {@link DslElementModel} could be created
    * for the given {@code applicationElement} with the current extensions context.
    */
-  <T> Optional<DslElementModel<T>> resolve(ComponentConfiguration componentConfiguration);
+  <T> Optional<DslElementModel<T>> create(ComponentConfiguration componentConfiguration);
 
 }

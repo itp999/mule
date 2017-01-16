@@ -25,6 +25,7 @@ import org.mule.runtime.extension.api.resources.ResourcesGenerator;
 import org.mule.runtime.extension.api.resources.spi.GeneratedResourceFactory;
 import org.mule.runtime.module.extension.internal.loader.java.JavaExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.ExtensionManagerAdapter;
+import org.mule.runtime.module.extension.internal.util.NullDslResolvingContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.jar.Manifest;
 
 /**
@@ -110,8 +110,8 @@ public class ExtensionsTestInfrastructureDiscoverer {
   public List<GeneratedResource> generateDslResources(File generatedResourcesDirectory, ExtensionModel forExtensionModel) {
     DslResolvingContext context =
         extensionManager.getExtensions().stream().anyMatch(e -> !e.getImportedTypes().isEmpty())
-            ? name -> extensionManager.getExtension(name).map(e -> e)
-            : name -> Optional.empty();
+            ? DslResolvingContext.getDefault(extensionManager)
+            : new NullDslResolvingContext();
 
     ExtensionsTestDslResourcesGenerator dslResourceGenerator =
         new ExtensionsTestDslResourcesGenerator(getDslResourceFactories(), generatedResourcesDirectory, context);

@@ -7,9 +7,11 @@
 package org.mule.runtime.config.spring.dsl.model;
 
 import static com.google.common.collect.ImmutableList.copyOf;
+import static org.apache.commons.lang.builder.EqualsBuilder.reflectionEquals;
+import static org.apache.commons.lang.builder.HashCodeBuilder.reflectionHashCode;
 import org.mule.metadata.api.model.MetadataType;
-import org.mule.runtime.api.app.config.ComponentIdentifier;
 import org.mule.runtime.api.app.config.ComponentConfiguration;
+import org.mule.runtime.api.app.config.ComponentIdentifier;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 
@@ -151,11 +153,10 @@ public class DslElementModel<T> {
 
     private M model;
     private DslElementSyntax dsl;
-    private Set<DslElementModel> contained;
     private ComponentConfiguration configuration;
+    private Set<DslElementModel> contained = new LinkedHashSet<>();
 
     private Builder() {
-      this.contained = new LinkedHashSet<>();
     }
 
     public Builder<M> withModel(M model) {
@@ -191,4 +192,20 @@ public class DslElementModel<T> {
     return new Builder<>();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    return reflectionEquals(this, o);
+  }
+
+  @Override
+  public int hashCode() {
+    return reflectionHashCode(this);
+  }
 }

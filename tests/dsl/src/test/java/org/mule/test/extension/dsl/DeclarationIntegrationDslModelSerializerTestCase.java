@@ -16,6 +16,7 @@ import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STR
 import static org.mule.runtime.extension.api.ExtensionConstants.REDELIVERY_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.COUNT;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.FREQUENCY;
+import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.RECONNECT_ALIAS;
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.MAX_REDELIVERY_COUNT;
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
@@ -47,83 +48,84 @@ public class DeclarationIntegrationDslModelSerializerTestCase extends AbstractEl
 
 
     applicationDeclaration = newApp("sampleApp")
-      .withConfig(db.newConfiguration("config")
-                    .withConnection(db.newConnection("derby")
-                                      .withParameter("database", "target/muleEmbeddedDB")
-                                      .withParameter("create", "true")
-                                      .getDeclaration())
-                    .getDeclaration())
-      .withConfig(http.newConfiguration("listener-config")
-                    .withRefName("httpListener")
-                    .withParameter("basePath", "/")
-                    .withConnection(http.newConnection("listener")
-                                      .withParameter("host", "localhost")
-                                      .withParameter("port", "49019")
-                                      .getDeclaration())
-                    .getDeclaration())
-      .withConfig(http.newConfiguration("request-config")
-                    .withRefName("httpRequester")
-                    .withConnection(http.newConnection("request")
-                                      .withParameter("host", "localhost")
-                                      .withParameter("port", "49020")
-                                      .withParameter("authentication",
-                                                     newObjectValue()
-                                                       .ofType(
-                                                         "org.mule.extension.http.api.request.authentication.BasicAuthentication")
-                                                       .withParameter("username", "user")
-                                                       .withParameter("password", "pass")
-                                                       .build())
-                                      .withParameter("clientSocketProperties",
-                                                     newObjectValue()
-                                                       .withParameter("connectionTimeout", "1000")
-                                                       .withParameter("keepAlive", "true")
-                                                       .withParameter("receiveBufferSize", "1024")
-                                                       .withParameter("sendBufferSize", "1024")
-                                                       .withParameter("clientTimeout", "1000")
-                                                       .withParameter("linger", "1000")
-                                                       .withParameter("sendTcpNoDelay", "true")
-                                                       .build())
-                                      .getDeclaration())
-                    .getDeclaration())
-      .withFlow(newFlow("testFlow")
-                  .withInitialState("stopped")
-                  .withComponent(http.newOperation("listener")
-                                   .withConfig("httpListener")
-                                   .withParameter("path", "testBuilder")
-                                   .withParameter(REDELIVERY_POLICY_PARAMETER_NAME,
-                                                  newObjectValue()
-                                                    .withParameter(MAX_REDELIVERY_COUNT, "2")
-                                                    .withParameter(USE_SECURE_HASH, "true")
-                                                    .build())
-                                   .withParameter(RECONNECTION_STRATEGY_PARAMETER_NAME,
-                                                  newObjectValue()
-                                                    .withParameter(COUNT, "1")
-                                                    .withParameter(FREQUENCY, "0")
-                                                    .build())
-                                   .withParameter("responseBuilder",
-                                                  newObjectValue()
-                                                    .withParameter("headers", "#[['content-type' : 'text/plain']]")
-                                                    .build())
-                                   .getDeclaration())
-                  .withComponent(db.newOperation("bulk-insert")
-                                   .withParameter("sql", "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)")
-                                   .withParameter("parameterTypes",
-                                                  newListValue()
-                                                    .withValue(newObjectValue()
-                                                                 .withParameter("key", "name")
-                                                                 .withParameter("type", "VARCHAR").build())
-                                                    .withValue(newObjectValue()
-                                                                 .withParameter("key", "position")
-                                                                 .withParameter("type", "INTEGER").build())
-                                                    .build())
-                                   .getDeclaration())
-                  .withComponent(http.newOperation("request")
-                                   .withConfig("httpRequester")
-                                   .withParameter("path", "/nested")
-                                   .withParameter("method", "POST")
-                                   .getDeclaration())
-                  .getDeclaration())
-      .getDeclaration();
+        .withConfig(db.newConfiguration("config")
+            .withConnection(db.newConnection("derby-connection")
+                .withParameter("database", "target/muleEmbeddedDB")
+                .withParameter("create", "true")
+                .getDeclaration())
+            .getDeclaration())
+        .withConfig(http.newConfiguration("listener-config")
+            .withRefName("httpListener")
+            .withParameter("basePath", "/")
+            .withConnection(http.newConnection("listener-connection")
+                .withParameter("host", "localhost")
+                .withParameter("port", "49019")
+                .getDeclaration())
+            .getDeclaration())
+        .withConfig(http.newConfiguration("request-config")
+            .withRefName("httpRequester")
+            .withConnection(http.newConnection("request-connection")
+                .withParameter("host", "localhost")
+                .withParameter("port", "49020")
+                .withParameter("authentication",
+                               newObjectValue()
+                                   .ofType(
+                                           "org.mule.extension.http.api.request.authentication.BasicAuthentication")
+                                   .withParameter("username", "user")
+                                   .withParameter("password", "pass")
+                                   .build())
+                .withParameter("clientSocketProperties",
+                               newObjectValue()
+                                   .withParameter("connectionTimeout", "1000")
+                                   .withParameter("keepAlive", "true")
+                                   .withParameter("receiveBufferSize", "1024")
+                                   .withParameter("sendBufferSize", "1024")
+                                   .withParameter("clientTimeout", "1000")
+                                   .withParameter("linger", "1000")
+                                   .withParameter("sendTcpNoDelay", "true")
+                                   .build())
+                .getDeclaration())
+            .getDeclaration())
+        .withFlow(newFlow("testFlow")
+            .withInitialState("stopped")
+            .withComponent(http.newOperation("listener")
+                .withConfig("httpListener")
+                .withParameter("path", "testBuilder")
+                .withParameter(REDELIVERY_POLICY_PARAMETER_NAME,
+                               newObjectValue()
+                                   .withParameter(MAX_REDELIVERY_COUNT, "2")
+                                   .withParameter(USE_SECURE_HASH, "true")
+                                   .build())
+                .withParameter(RECONNECTION_STRATEGY_PARAMETER_NAME,
+                               newObjectValue()
+                                   .ofType(RECONNECT_ALIAS) //FIXME hackish alias for infrastructure union type
+                                   .withParameter(COUNT, "1")
+                                   .withParameter(FREQUENCY, "0")
+                                   .build())
+                .withParameter("responseBuilder",
+                               newObjectValue()
+                                   .withParameter("headers", "#[['content-type' : 'text/plain']]")
+                                   .build())
+                .getDeclaration())
+            .withComponent(db.newOperation("bulkInsert")
+                .withParameter("sql", "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)")
+                .withParameter("parameterTypes",
+                               newListValue()
+                                   .withValue(newObjectValue()
+                                       .withParameter("key", "name")
+                                       .withParameter("type", "VARCHAR").build())
+                                   .withValue(newObjectValue()
+                                       .withParameter("key", "position")
+                                       .withParameter("type", "INTEGER").build())
+                                   .build())
+                .getDeclaration())
+            .withComponent(http.newOperation("request")
+                .withConfig("httpRequester")
+                .withParameter("path", "/nested")
+                .withParameter("method", "POST")
+                .getDeclaration())
+            .getDeclaration())
+        .getDeclaration();
   }
 
   private void createAppDocument() throws ParserConfigurationException {
@@ -155,26 +157,25 @@ public class DeclarationIntegrationDslModelSerializerTestCase extends AbstractEl
     XmlDslElementModelConverter converter = XmlDslElementModelConverter.getDefault(this.doc);
 
     applicationDeclaration
-      .getConfigs()
-      .forEach(declaration -> doc.getDocumentElement()
-        .appendChild(converter.asXml(modelResolver.resolve(declaration))));
+        .getConfigs()
+        .forEach(declaration -> doc.getDocumentElement()
+            .appendChild(converter.asXml(modelResolver.create(declaration))));
 
 
 
     applicationDeclaration
-      .getFlows()
-      .forEach(flowDeclaration -> {
-        Element flow = doc.createElement("flow");
-        flow.setAttribute("name", flowDeclaration.getName());
-        flow.setAttribute("initialState", flowDeclaration.getInitialState());
+        .getFlows()
+        .forEach(flowDeclaration -> {
+          Element flow = doc.createElement("flow");
+          flow.setAttribute("name", flowDeclaration.getName());
+          flow.setAttribute("initialState", flowDeclaration.getInitialState());
 
-        flowDeclaration.getComponents()
-          .forEach(component -> flow
-            .appendChild(converter.asXml(modelResolver.resolve(component))));
+          flowDeclaration.getComponents()
+              .forEach(component -> flow
+                  .appendChild(converter.asXml(modelResolver.create(component))));
 
-        doc.getDocumentElement().appendChild(flow);
-      })
-    ;
+          doc.getDocumentElement().appendChild(flow);
+        });
     //ComponentConfiguration componentsFlow = getAppElement(applicationModel, COMPONENTS_FLOW);
     //Element httpListenerSource = converter.asXml(resolve(componentsFlow.getNestedComponents().get(LISTENER_PATH)));
     //

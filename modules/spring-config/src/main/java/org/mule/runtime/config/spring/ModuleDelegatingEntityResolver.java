@@ -13,6 +13,7 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.registry.ServiceRegistry;
 import org.mule.runtime.core.registry.SpiServiceRegistry;
 import org.mule.runtime.extension.api.ExtensionManager;
+import org.mule.runtime.extension.api.dsl.DslResolvingContext;
 import org.mule.runtime.extension.api.resources.GeneratedResource;
 import org.mule.runtime.extension.api.dsl.syntax.resources.spi.SchemaResourceFactory;
 
@@ -112,7 +113,7 @@ public class ModuleDelegatingEntityResolver implements EntityResolver {
    */
   private InputStream getSchema(ExtensionModel extensionModel) {
     Optional<GeneratedResource> generatedResource =
-        schemaResourceFactory.get().generateResource(extensionModel, s -> extensionManager.get().getExtension(s));
+        schemaResourceFactory.get().generateResource(extensionModel, DslResolvingContext.getDefault(extensionManager.get()));
     if (!generatedResource.isPresent()) {
       throw new IllegalStateException(format("There were no schema generators available when trying to work with the extension '%s'",
                                              extensionModel.getName()));

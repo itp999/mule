@@ -24,13 +24,13 @@ import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.config.spring.XmlConfigurationDocumentLoader;
 import org.mule.runtime.config.spring.dsl.model.ApplicationModel;
 import org.mule.runtime.config.spring.dsl.model.DslElementModel;
-import org.mule.runtime.config.spring.dsl.model.DslElementModelResolver;
+import org.mule.runtime.config.spring.dsl.model.DslElementModelFactory;
 import org.mule.runtime.config.spring.dsl.processor.ArtifactConfig;
 import org.mule.runtime.config.spring.dsl.processor.ConfigFile;
 import org.mule.runtime.config.spring.dsl.processor.ConfigLine;
 import org.mule.runtime.config.spring.dsl.processor.xml.XmlApplicationParser;
 import org.mule.runtime.core.registry.SpiServiceRegistry;
-import org.mule.runtime.module.extension.internal.config.dsl.DefaultDslContext;
+import org.mule.runtime.extension.api.dsl.DslResolvingContext;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import java.io.InputStream;
@@ -74,7 +74,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   protected static final int REQUESTER_PATH = 3;
 
   protected ApplicationModel applicationModel;
-  protected DslElementModelResolver modelResolver;
+  protected DslElementModelFactory modelResolver;
   protected Document doc;
 
   @Override
@@ -85,12 +85,12 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   @Before
   public void setup() throws Exception {
     applicationModel = loadApplicationModel();
-    modelResolver = DslElementModelResolver.getDefault(new DefaultDslContext(muleContext.getExtensionManager()));
+    modelResolver = DslElementModelFactory.getDefault(DslResolvingContext.getDefault(muleContext.getExtensionManager()));
   }
 
   // Scaffolding
   protected <T extends NamedObject> DslElementModel<T> resolve(ComponentConfiguration component) {
-    Optional<DslElementModel<T>> elementModel = modelResolver.resolve(component);
+    Optional<DslElementModel<T>> elementModel = modelResolver.create(component);
     assertThat(elementModel.isPresent(), is(true));
     return elementModel.get();
   }
@@ -190,6 +190,10 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     // Output for debugging
     StreamResult sout = new StreamResult(System.out);
     transformer.transform(source, sout);
+
+    // Output for debugging?
+    StreamResult result = new StreamResult(new java.io.File("dslSerialization.xml"));
+    transformer.transform(source, result);
 
     StringWriter writer = new StringWriter();
     transformer.transform(source, new StreamResult(writer));

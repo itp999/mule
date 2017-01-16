@@ -20,6 +20,8 @@ import org.mule.runtime.api.meta.model.XmlDslModel;
 import org.mule.runtime.core.api.registry.ServiceRegistry;
 import org.mule.runtime.extension.api.dsl.DslResolvingContext;
 import org.mule.runtime.extension.api.loader.DeclarationEnricher;
+import org.mule.runtime.extension.api.type.TypeCatalog;
+import org.mule.runtime.extension.internal.type.DefaultTypeCatalog;
 import org.mule.runtime.module.extension.internal.capability.xml.schema.SchemaGenerator;
 import org.mule.runtime.module.extension.internal.loader.enricher.JavaXmlDeclarationEnricher;
 import org.mule.runtime.module.extension.internal.runtime.connectivity.basic.GlobalInnerPojoConnector;
@@ -135,6 +137,11 @@ public class SchemaGeneratorTestCase extends AbstractMuleTestCase {
     @Override
     public Set<ExtensionModel> getExtensions() {
       return copyOf(extensionModels.values());
+    }
+
+    @Override
+    public TypeCatalog getTypeCatalog() {
+      return new DefaultTypeCatalog(copyOf(extensionModels.values()));
     }
   }
 

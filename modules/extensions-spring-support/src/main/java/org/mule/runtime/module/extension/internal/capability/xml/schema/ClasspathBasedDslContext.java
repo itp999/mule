@@ -16,6 +16,8 @@ import static org.reflections.util.ClasspathHelper.forClassLoader;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.dsl.DslResolvingContext;
+import org.mule.runtime.extension.api.type.TypeCatalog;
+import org.mule.runtime.extension.internal.type.DefaultTypeCatalog;
 import org.mule.runtime.module.extension.internal.util.MuleExtensionUtils;
 
 import java.net.URL;
@@ -41,6 +43,7 @@ class ClasspathBasedDslContext implements DslResolvingContext {
   private final ClassLoader classLoader;
   private final Map<String, Class<?>> extensionsByName = new HashMap<>();
   private final Map<String, ExtensionModel> resolvedModels = new HashMap<>();
+  private TypeCatalog typeCatalog;
 
   ClasspathBasedDslContext(ClassLoader classLoader) {
     this.classLoader = classLoader;
@@ -62,8 +65,17 @@ class ClasspathBasedDslContext implements DslResolvingContext {
   @Override
   public Set<ExtensionModel> getExtensions() {
     return resolvedModels.size() != extensionsByName.size()
-      ? extensionsByName.values().stream().map(MuleExtensionUtils::loadExtension).collect(toSet())
-      : copyOf(resolvedModels.values());
+        ? extensionsByName.values().stream().map(MuleExtensionUtils::loadExtension).collect(toSet())
+        : copyOf(resolvedModels.values());
+  }
+
+  @Override
+  public TypeCatalog getTypeCatalog() {
+    if (typeCatalog == null) {
+      typeCatalog = new DefaultTypeCatalog(getExtensions());
+    }
+
+    return typeCatalog;
   }
 
   private void findExtensionsInClasspath() {
