@@ -1637,7 +1637,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
 
     deploymentService.setAppFactory(appFactory);
     startDeployment();
-    //loty
+
     assertDeploymentSuccess(applicationDeploymentListener, applicationFileBuilder.getId());
   }
 
