@@ -60,6 +60,7 @@ public class MessageProcessorInterceptionFlowTestCase extends AbstractIntegratio
         fileReadCallbackHolder = new ProcessorInterceptorCallbackHolder();
         customInterceptorCallbackHolder = new ProcessorInterceptorCallbackHolder();
 
+        //TODO interception should not be registered by componentIdentifier, it should be always intercepted
         muleContext.getMessageProcessorInterceptorManager().registerInterceptionCallback(loggerComponentIdentifier,
                                                                                          loggerCallbackHolder);
         muleContext.getMessageProcessorInterceptorManager().registerInterceptionCallback(fileReadComponentIdentifier,
@@ -150,7 +151,8 @@ public class MessageProcessorInterceptionFlowTestCase extends AbstractIntegratio
       final Message response = Message.builder()
           .payload(message.getPayload().getValue() + " " + INTERCEPTED)
           .build();
-      System.out.println("INTERCEPTING --- request: '" + message.getPayload().getValue() + "' response: '" + response.getPayload().getValue() + "'");
+      //System.out.println("INTERCEPTING --- request: '" + message.getPayload().getValue() + "' response: '"
+      //    + response.getPayload().getValue() + "'");
       return response;
     }
 

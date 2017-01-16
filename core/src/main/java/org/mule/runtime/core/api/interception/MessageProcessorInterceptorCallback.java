@@ -28,6 +28,8 @@ public interface MessageProcessorInterceptorCallback {
 
   Message getResult(Message message, Map<String, String> parameters) throws MuleException;
 
+  //TODO should support throwing an exception
+  //TODO should all also support changing the Message (debugger use case)
   default void after(Message resultMessage, Map<String, String> parameters, MessagingException e) {}
 
 }
