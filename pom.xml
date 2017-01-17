@@ -1582,7 +1582,7 @@
                         <execution>
                             <phase>compile</phase>
                             <goals>
-                                <goal>format</goal>
+                                <goal>validate</goal>
                             </goals>
                             <configuration>
                                 <skipFormatting>${skipVerifications}</skipFormatting>
